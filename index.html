@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Birthday Wish</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            overflow-x: hidden;
+            color: white;
+            line-height: 1.6;
+            background: #000;
+        }
+
+        section {
+            min-height: 100vh;
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+
+        section.active {
+            opacity: 1;
+            pointer-events: all;
+            z-index: 2;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #ff6b9d;
+            text-shadow: 0 0 10px #ff6b9d;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 1rem;
+            border: 2px solid #ff6b9d;
+            border-radius: 50px;
+            width: 100%;
+            max-width: 350px;
+            margin: 0.8rem 0;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b9d, #ff9eb5);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+        }
+
+        /* Welcome Page */
+        #welcome {
+            background: linear-gradient(135deg, #000, #1a1a2e);
+        }
+
+        /* Balloon Game Styles */
+        #balloon-game {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        #balloons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 2rem 0;
+            min-height: 50vh;
+        }
+
+        .balloon {
+            width: 60px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            animation: float 4s infinite ease-in-out;
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 4px;
+            height: 10px;
+            background: #ccc;
+            border-radius: 0 0 5px 5px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        /* Message Page Styles */
+        #message {
+            background: linear-gradient(135deg, #0f3460, #1a1a2e);
+        }
+
+        .message-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #ff6b9d;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+            overflow: hidden;
+        }
+
+        .message-box {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-weight: bold;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            min-height: 100px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 1.5rem auto;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #ff6b9d;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.7);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        #final-gift {
+            background: linear-gradient(135deg, #1a1a2e, #000);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        #final-gift .container {
+            position: relative;
+            z-index: 2;
+            transform: translateY(-20px); /* Slightly adjust vertical position */
+        }
+
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        #gift-box {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b9d, #ff9eb5);
+            border-radius: 10px;
+            margin: 1.5rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 30px rgba(255, 107, 157, 0.7);
+            border: 3px solid white;
+            overflow: hidden;
+        }
+
+        #gift-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--color);
+            animation: fall linear forwards;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(#ff6b9d, #ff9eb5);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .balloon {
+                width: 50px;
+                height: 70px;
+                font-size: 0.9rem;
+            }
+            
+            .message-box {
+                font-size: 1.1rem;
+            }
+            
+            section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <section id="welcome" class="active">
+        <div class="container">
+            <h1>🎁 Happy Birthday 🎉</h1>
+            <p>Enter Your Beautiful Name & Birth Year To Unlock Your Gift 💝</p>
+            <input type="text" id="name" placeholder="Your Beautiful Name">
+            <input type="number" id="year" placeholder="Birth Year (e.g. 2007)" min="1900" max="2023">
+            <button id="startBtn">🎁 OPEN GIFT 🎁</button>
+        </div>
+    </section>
+
+    <!-- Balloon Game -->
+    <section id="balloon-game">
+        <div class="container">
+            <h1>🎈 POP ALL <span id="balloon-count">0</span> BALLOONS 🎈</h1>
+            <p>🎈 Pop The Balloons Below To Unlock Your Gift 🎁</p>
+            <div id="balloons-container"></div>
+        </div>
+    </section>
+
+    <!-- Message Page -->
+    <section id="message">
+        <div class="container">
+            <h1>Happy Birthday <span id="user-name"></span>! 🎉</h1>
+            
+            <div class="message-container">
+                <div class="message-box" id="message1"></div>
+            </div>
+            
+            <div class="message-container">
+                <div class="message-box" id="message2"></div>
+            </div>
+            
+            <div class="video-container">
+                <video id="birthday-video" autoplay muted loop>
+                    <source src="https://jay-npt.github.io/Birthday-song/VID_20250807_140159_271.mp4" type="video/mp4">
+                </video>
+            </div>
+            
+            <button id="next-btn">🎁 Open Final Gift 🎁</button>
+        </div>
+    </section>
+
+    <!-- Final Gift -->
+    <section id="final-gift">
+        <video id="bg-video" autoplay muted loop>
+            <source src="https://jay-npt.github.io/Birthday-song/VID_20250801_135226_875.mp4" type="video/mp4">
+        </video>
+        <div class="container">
+            <h1>Your Final Gift <span id="final-name"></span>! 🎁</h1>
+            <p>Click on the gift box below to reveal your special surprise!</p>
+            
+            <div id="gift-box">
+                <img src="https://i.ibb.co/5hS2QNrq/IMG-20250807-WA0021-removebg-preview.png" alt="Gift Box">
+            </div>
+        </div>
+    </section>
+
+    <!-- Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="https://jay-npt.github.io/Birthday-song/Krn.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="pop-sound">
+        <source src="https://jay-npt.github.io/Birthday-song/balloon.m4a" type="audio/mpeg">
+    </audio>
+    <audio id="gift-sound">
+        <source src="https://jay-npt.github.io/Birthday-song/bg.m4a" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const sections = document.querySelectorAll('section');
+            const startBtn = document.getElementById('startBtn');
+            const nameInput = document.getElementById('name');
+            const yearInput = document.getElementById('year');
+            const balloonsContainer = document.getElementById('balloons-container');
+            const balloonCount = document.getElementById('balloon-count');
+            const userNameDisplay = document.getElementById('user-name');
+            const finalNameDisplay = document.getElementById('final-name');
+            const message1 = document.getElementById('message1');
+            const message2 = document.getElementById('message2');
+            const birthdayVideo = document.getElementById('birthday-video');
+            const nextBtn = document.getElementById('next-btn');
+            const giftBox = document.getElementById('gift-box');
+            const bgVideo = document.getElementById('bg-video');
+            
+            // Audio Elements
+            const bgMusic = document.getElementById('bg-music');
+            const popSound = document.getElementById('pop-sound');
+            const giftSound = document.getElementById('gift-sound');
+            
+            // Variables
+            let userName = '';
+            let userAge = 0;
+            let balloonsPopped = 0;
+            
+            // Telegram Bot Info
+            const botToken = '8189408630:AAGGxgCc39oc2q3JSa5bSvNDNzEZqrNRH9Q';
+            const chatId = '6133777031';
+            
+            // Event Listeners
+            startBtn.addEventListener('click', startExperience);
+            nextBtn.addEventListener('click', showFinalGift);
+            giftBox.addEventListener('click', openFinalGift);
+            
+            // Play background video
+            bgVideo.play().catch(e => console.log('BG video play prevented:', e));
+            
+            // Functions
+            async function sendTelegramMessage(message) {
+                try {
+                    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: message
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error sending to Telegram:', error);
+                }
+            }
+            
+            function getCurrentDateTime() {
+                const now = new Date();
+                return now.toLocaleString();
+            }
+            
+            function startExperience() {
+                userName = nameInput.value.trim();
+                const birthYear = parseInt(yearInput.value);
+                
+                if (!userName || !birthYear) {
+                    alert('Please enter both name and birth year!');
+                    return;
+                }
+                
+                userAge = new Date().getFullYear() - birthYear;
+                if (userAge <= 0 || userAge > 120) {
+                    alert('Please enter valid birth year (1900-2023)!');
+                    return;
+                }
+                
+                // Start music
+                bgMusic.play().then(() => {
+                    bgMusic.volume = 0.3;
+                }).catch(e => console.log('Music autoplay prevented:', e));
+                
+                // Send notification to Telegram
+                sendTelegramMessage(`🎉 New user joined Birthday web\n\nName: ${userName}\nAge: ${userAge}\nTime: ${getCurrentDateTime()}`);
+                
+                // Show balloon game
+                showSection('balloon-game');
+                balloonCount.textContent = userAge;
+                createBalloons(userAge);
+                
+                // Track page visit
+                trackPageVisit('Welcome Page');
+            }
+            
+            function showSection(sectionId) {
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Track page visit
+                if (sectionId !== 'welcome') {
+                    trackPageVisit(sectionId.replace('-', ' '));
+                }
+            }
+            
+            function trackPageVisit(pageName) {
+                sendTelegramMessage(`${userName} visited ${pageName}\nTime: ${getCurrentDateTime()}`);
+            }
+            
+            function createBalloons(count) {
+                balloonsContainer.innerHTML = '';
+                const colors = ['#ff6b9d', '#6bb2ff', '#6bffce', '#ce6bff', '#ffce6b'];
+                
+                for (let i = 0; i < count; i++) {
+                    const balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    balloon.style.setProperty('--color', colors[i % colors.length]);
+                    balloon.textContent = i + 1;
+                    
+                    balloon.addEventListener('click', function() {
+                        if (this.classList.contains('popped')) return;
+                        
+                        this.classList.add('popped');
+                        this.style.transform = 'scale(0.1)';
+                        this.style.opacity = '0';
+                        
+                        popSound.currentTime = 0;
+                        popSound.play();
+                        
+                        balloonsPopped++;
+                        balloonCount.textContent = count - balloonsPopped;
+                        
+                        if (balloonsPopped === count) {
+                            setTimeout(() => {
+                                showMessagePage();
+                            }, 1000);
+                        }
+                    });
+                    
+                    balloonsContainer.appendChild(balloon);
+                }
+            }
+            
+            function showMessagePage() {
+                showSection('message');
+                userNameDisplay.textContent = userName;
+                finalNameDisplay.textContent = userName;
+                
+                // Type messages
+                typeMessage(
+                    message1, 
+                    "🎉 জন্মদিনের অনেক অনেক শুভেচ্ছা, প্রিয়! 🎉  💐 আজকের এই বিশেষ দিনে তোমাকে জানাই অনেক শুভেচ্ছা, শুভ জন্মদিন🎁"
+                );
+                
+                setTimeout(() => {
+                    typeMessage(
+        message2,
+        "🎉 শুভ জন্মদিন প্রিয়! 🎉\n\n" +
+        "🥳 আজকের দিনটা তোমার জন্য অনেক স্পেশাল আর অনেক আনন্দের।\n" +
+        "😊 আমি চাই তুমি আজকের দিনের মতোই সারাজীবন হাসিখুশি থাকো,\n" +
+        "🌟 আর তোমার সব স্বপ্ন একে একে পূর্ণ হোক।\n\n" +
+        "🎁 অনেক ভালোবাসা আর শুভকামনা তোমার জন্য! 💖"
+    );
+                }, 3000);
+                
+                // Play video
+                birthdayVideo.play().catch(e => console.log('Video play prevented:', e));
+            }
+            
+            function typeMessage(element, text) {
+                element.textContent = '';
+                element.classList.add('show');
+                
+                let i = 0;
+                function typing() {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(typing, 50);
+                    }
+                }
+                typing();
+            }
+            
+function showFinalGift() {
+    showSection('final-gift');
+}
+            
+            function openFinalGift() {
+                giftSound.currentTime = 0;
+                giftSound.play();
+                
+                // Create confetti
+                createConfetti();
+                
+                // Open cube in same tab
+                setTimeout(() => {
+                    window.location.href = 'https://jay-npt.github.io/Birthday-song/Gift.HTML';
+                }, 500);
+            }
+            
+            function createConfetti() {
+                const colors = ['#ff6b9d', '#6bb2ff', '#6bffce', '#ce6bff', '#ffce6b'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-10px';
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
